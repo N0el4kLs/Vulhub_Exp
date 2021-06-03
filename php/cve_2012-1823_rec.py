@@ -8,6 +8,10 @@
 import requests
 from bs4 import BeautifulSoup
 import time 
+import getopt
+import sys
+#------------------------------------------------------------------
+
 
 def poc(target_url):
     print('Testing target_url is  Vulnerable or not......')
@@ -29,11 +33,28 @@ def exp(target_url):
 
 
 if __name__ == '__main__':
-    url = 'http://192.168.0.111:8080'
-    is_vulnerable = poc(url)
+    # url = 'http://192.168.0.111:8080'
+    target_url = '' 
+    try:
+        opts, args = getopt.getopt(sys.argv[1:],'-h-u:',['help','url='])
+        if len(sys.argv) == 1 or not len(args) == 0:
+             print(f'Usage python3 {sys.argv[0]} -u <tagrturl>')
+             sys.exit(-1)
+        for opt,value in opts:
+            if opt in ('-u','url='):
+               target_url=value
+            elif opt in ('-h','--help'):
+                print(f'Usage python3 {sys.argv[0]} -u <tagrturl>')
+                sys.exit()
+    except getopt.GetoptError:
+        print(f'Usage python3 {sys.argv[0]} -u <tagrturl>')
+        sys.exit(2)
+
+
+    is_vulnerable = poc(target_url)
     if is_vulnerable == True:
         print('\033[1;32m[+] Vulnerable!!!\033[0m')
         time.sleep(0.5)
-        exp(url)
+        exp(target_url)
     else:
         print(' \033[1;31m[-] No Vulnerable!!! \033[0m')
